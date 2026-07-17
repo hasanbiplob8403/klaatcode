@@ -31,7 +31,7 @@ klaatcode
 </p>
 
 <p align="center">
-  <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHh2aHNuMDRwbmdqNnN4ajJrMW9hZnJnbWhzNGw1ZDNiNHQ4NzB2ayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gY9xQrCtaMHCmX04FA/giphy.gif" alt="KlaatCode CLI demo" width="720" />
+  <img src="assets/klaatcode.jpg" alt="KlaatCode CLI demo" width="720" />
 </p>
 
 ---
@@ -159,7 +159,7 @@ Markdown responses render with per-language syntax highlighting directly in the 
 - Slash-command autocomplete — type `/` for a fuzzy-filtered live suggestion strip
 - Collapsible tool output and thinking blocks — click to expand
 - Full mouse support: click, scroll, drag-select
-- 7 themes: `dark`, `light`, `dracula`, `nord`, `ayu`, `catppuccin`, `gruvbox` (`/theme`)
+- 13 themes: `dark`, `light`, `dracula`, `nord`, `ayu`, `catppuccin`, `gruvbox`, `neon`, `synthwave`, `ember`, `matrix`, `cobalt`, `midnight` (`/theme`)
 - Vim keybindings (`/vimmode on`)
 - Sidebar: usage, context window fill, MCP servers, routing analytics
 - Diffs render as colored, syntax-highlighted unified-diff blocks — including multi-file patches
