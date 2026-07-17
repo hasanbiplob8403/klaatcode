@@ -1,0 +1,6 @@
+# Restrict test discovery to src/ so the bench fixture tests (which ship
+# intentionally FAILING — the agent must make them pass) are never picked up by
+# the project/CI test run. The bench harness runs those fixtures itself inside a
+# copied temp workspace.
+[test]
+root = "src"

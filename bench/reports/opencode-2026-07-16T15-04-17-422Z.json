@@ -1,0 +1,30 @@
+{
+  "suite": "klaatcode-bench-v2",
+  "agent": "opencode",
+  "model": "opencode/big-pickle",
+  "when": "2026-07-16T15-04-17-422Z",
+  "complete": true,
+  "costEstimated": false,
+  "solved": 1,
+  "total": 1,
+  "planned": 1,
+  "totalCostUsd": 0,
+  "totalTokens": 40775,
+  "tasks": [
+    {
+      "id": "fix-fizzbuzz",
+      "difficulty": "easy",
+      "category": "bugfix",
+      "passed": true,
+      "promptTokens": 8821,
+      "completionTokens": 530,
+      "totalTokens": 40775,
+      "cacheReadTokens": 31424,
+      "cacheCreateTokens": 0,
+      "turns": 4,
+      "costUsd": 0,
+      "model": "opencode/big-pickle",
+      "elapsedMs": 19643
+    }
+  ]
+}

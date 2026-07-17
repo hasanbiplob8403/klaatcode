@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+
+# Never commit local KlaatAI state — credentials, sessions, ledgers.
+.klaatai/
+*.ledger.md
+
+# Editor
+.vscode/
+.idea/

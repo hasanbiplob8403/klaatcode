@@ -1,0 +1,61 @@
+{
+  "name": "klaatai",
+  "version": "2.2.2",
+  "description": "KlaatAI \u2014 AI coding assistant CLI with smart model routing",
+  "license": "MIT",
+  "author": "KlaatAI <hello@klaatai.com>",
+  "homepage": "https://klaatai.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KlaatAI/klaatcode.git"
+  },
+  "keywords": [
+    "ai",
+    "cli",
+    "coding-assistant",
+    "llm",
+    "terminal",
+    "opencode",
+    "claude"
+  ],
+  "bin": {
+    "klaatai": "dist/klaatai.js"
+  },
+  "files": [
+    "dist/klaatai.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "dev": "bun run src/main.tsx",
+    "build": "bun build src/main.tsx --target bun --outfile dist/klaatai.js --minify && node -e \"const f='dist/klaatai.js',fs=require('fs'),c=fs.readFileSync(f,'utf8');if(!c.startsWith('#!/'))fs.writeFileSync(f,'#!/usr/bin/env bun\\n'+c);fs.chmodSync(f,0o755)\"",
+    "build:binary:mac-arm": "bun build src/main.tsx --compile --target bun-darwin-arm64  --outfile dist/binaries/klaatai-macos-arm64",
+    "build:binary:mac-x64": "bun build src/main.tsx --compile --target bun-darwin-x64    --outfile dist/binaries/klaatai-macos-x64",
+    "build:binary:linux": "bun build src/main.tsx --compile --target bun-linux-x64      --outfile dist/binaries/klaatai-linux-x64",
+    "build:binary:windows": "bun build src/main.tsx --compile --target bun-windows-x64    --outfile dist/binaries/klaatai-windows-x64.exe",
+    "build:binaries": "mkdir -p dist/binaries && bun run build:binary:mac-arm && bun run build:binary:mac-x64 && bun run build:binary:linux && bun run build:binary:windows",
+    "prepublishOnly": "bun run build",
+    "typecheck": "tsc --noEmit",
+    "bench": "bun bench/run.ts",
+    "bench:selfcheck": "bun bench/selfcheck.ts",
+    "bench:claude": "bun bench/compare-claude.ts",
+    "sync:public": "bash scripts/sync-to-public.sh",
+    "sync:public:push": "bash scripts/sync-to-public.sh --push",
+    "release": "bun run build && bun run build:binaries"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/KlaatAI/klaatcode/issues"
+  }
+}

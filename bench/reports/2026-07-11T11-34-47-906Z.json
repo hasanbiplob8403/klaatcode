@@ -1,0 +1,32 @@
+{
+  "suite": "klaatcode-bench-v1",
+  "tier": "auto",
+  "runs": 1,
+  "when": "2026-07-11T11-34-47-906Z",
+  "solved": 1,
+  "total": 1,
+  "totalCostUsd": 0.0033165,
+  "totalTokens": 6465,
+  "tasks": [
+    {
+      "id": "fix-fizzbuzz",
+      "difficulty": "easy",
+      "passed": true,
+      "promptTokens": 6381,
+      "completionTokens": 84,
+      "totalTokens": 6465,
+      "requests": 1,
+      "turns": 3,
+      "toolCalls": 4,
+      "costUsd": 0.0033165,
+      "tiers": {
+        "code": 1
+      },
+      "lastModel": "nvidia/nemotron-3-ultra-550b-a55b:free",
+      "elapsedMs": 26432,
+      "stoppedBy": "done",
+      "runs": 1,
+      "passes": 1
+    }
+  ]
+}

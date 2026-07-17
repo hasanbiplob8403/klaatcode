@@ -1,0 +1,238 @@
+{
+  "name": "klaatcode-bench-v2",
+  "description": "Self-contained coding tasks with objective pass/fail verifiers. Measures cost/tokens/turns/success per solved task. Categories: bug fix, implement-from-stub, multi-file, refactor, parsing.",
+  "verify": "bun test",
+  "tasks": [
+    {
+      "id": "fix-fizzbuzz",
+      "dir": "tasks/fix-fizzbuzz",
+      "prompt": "The tests in src/fizzbuzz.test.ts are failing. Fix the bug in src/fizzbuzz.ts so all tests pass. Do not edit the test file.",
+      "difficulty": "easy",
+      "category": "bugfix"
+    },
+    {
+      "id": "fix-off-by-one",
+      "dir": "tasks/fix-off-by-one",
+      "prompt": "sumRange in src/range.ts is off by one and excludes the upper bound. Fix it so the tests in src/range.test.ts pass. Do not edit the test file.",
+      "difficulty": "easy",
+      "category": "bugfix"
+    },
+    {
+      "id": "fix-reverse-words",
+      "dir": "tasks/fix-reverse-words",
+      "prompt": "The tests in src/words.test.ts are failing. Fix the bug in src/words.ts so all tests pass. Do not edit the test file.",
+      "difficulty": "easy",
+      "category": "bugfix"
+    },
+    {
+      "id": "fix-numeric-sort",
+      "dir": "tasks/fix-numeric-sort",
+      "prompt": "The tests in src/sort.test.ts are failing. Fix the bug in src/sort.ts so all tests pass. Do not edit the test file.",
+      "difficulty": "easy",
+      "category": "bugfix"
+    },
+    {
+      "id": "fix-input-mutation",
+      "dir": "tasks/fix-input-mutation",
+      "prompt": "The tests in src/top.test.ts are failing. Fix the bug in src/top.ts so all tests pass. Do not edit the test file.",
+      "difficulty": "easy",
+      "category": "bugfix"
+    },
+    {
+      "id": "fix-async-order",
+      "dir": "tasks/fix-async-order",
+      "prompt": "fetchAll in src/fetch-all.ts is broken \u2014 the tests in src/fetch-all.test.ts fail. Fix it so all tests pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "bugfix"
+    },
+    {
+      "id": "fix-shallow-copy",
+      "dir": "tasks/fix-shallow-copy",
+      "prompt": "The tests in src/settings.test.ts are failing. Fix the bug in src/settings.ts so all tests pass. Do not edit the test file.",
+      "difficulty": "easy",
+      "category": "bugfix"
+    },
+    {
+      "id": "fix-unicode-truncate",
+      "dir": "tasks/fix-unicode-truncate",
+      "prompt": "truncate in src/truncate.ts breaks emoji. Fix it so the tests in src/truncate.test.ts pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "bugfix"
+    },
+    {
+      "id": "fix-money-rounding",
+      "dir": "tasks/fix-money-rounding",
+      "prompt": "cartTotal in src/prices.ts accumulates floating-point error. Fix it so the tests in src/prices.test.ts pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "bugfix"
+    },
+    {
+      "id": "fix-regex-escape",
+      "dir": "tasks/fix-regex-escape",
+      "prompt": "highlight in src/highlight.ts breaks when the search term contains regex metacharacters. Fix it so the tests in src/highlight.test.ts pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "bugfix"
+    },
+    {
+      "id": "fix-state-machine",
+      "dir": "tasks/fix-state-machine",
+      "prompt": "The order state machine in src/order.ts does not match the transition rules documented at the top of the file, and the tests in src/order.test.ts fail. Fix the transition table. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "bugfix"
+    },
+    {
+      "id": "implement-csv",
+      "dir": "tasks/implement-csv",
+      "prompt": "Implement parseCsv in src/csv.ts so that the tests in src/csv.test.ts pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "implement"
+    },
+    {
+      "id": "implement-lru-cache",
+      "dir": "tasks/implement-lru-cache",
+      "prompt": "Implement the LruCache class in src/lru.ts (spec in the file comments) so the tests in src/lru.test.ts pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "implement"
+    },
+    {
+      "id": "implement-query-string",
+      "dir": "tasks/implement-query-string",
+      "prompt": "Implement parseQuery in src/qs.ts (spec in the file comments) so the tests in src/qs.test.ts pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "implement"
+    },
+    {
+      "id": "implement-event-emitter",
+      "dir": "tasks/implement-event-emitter",
+      "prompt": "Implement the Emitter class in src/emitter.ts (spec in the file comments) so the tests in src/emitter.test.ts pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "implement"
+    },
+    {
+      "id": "implement-semver-compare",
+      "dir": "tasks/implement-semver-compare",
+      "prompt": "Implement compareVersions in src/semver.ts (spec in the file comments) so the tests in src/semver.test.ts pass. Do not edit the test file.",
+      "difficulty": "easy",
+      "category": "implement"
+    },
+    {
+      "id": "implement-deep-equal",
+      "dir": "tasks/implement-deep-equal",
+      "prompt": "Implement deepEqual in src/deep-equal.ts (spec in the file comments) so the tests in src/deep-equal.test.ts pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "implement"
+    },
+    {
+      "id": "implement-interval-merge",
+      "dir": "tasks/implement-interval-merge",
+      "prompt": "Implement mergeIntervals in src/intervals.ts (spec in the file comments) so the tests in src/intervals.test.ts pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "implement"
+    },
+    {
+      "id": "implement-roman-numerals",
+      "dir": "tasks/implement-roman-numerals",
+      "prompt": "Implement toRoman in src/roman.ts (spec in the file comments) so the tests in src/roman.test.ts pass. Do not edit the test file.",
+      "difficulty": "easy",
+      "category": "implement"
+    },
+    {
+      "id": "implement-chunk",
+      "dir": "tasks/implement-chunk",
+      "prompt": "Implement chunk in src/chunk.ts (spec in the file comments) so the tests in src/chunk.test.ts pass. Do not edit the test file.",
+      "difficulty": "easy",
+      "category": "implement"
+    },
+    {
+      "id": "implement-group-by",
+      "dir": "tasks/implement-group-by",
+      "prompt": "Implement groupBy in src/group-by.ts (spec in the file comments) so the tests in src/group-by.test.ts pass. Do not edit the test file.",
+      "difficulty": "easy",
+      "category": "implement"
+    },
+    {
+      "id": "implement-json-pointer",
+      "dir": "tasks/implement-json-pointer",
+      "prompt": "Implement getByPointer in src/pointer.ts \u2014 an RFC 6901 JSON Pointer resolver (spec in the file comments) \u2014 so the tests in src/pointer.test.ts pass. Do not edit the test file.",
+      "difficulty": "hard",
+      "category": "implement"
+    },
+    {
+      "id": "implement-markdown-table",
+      "dir": "tasks/implement-markdown-table",
+      "prompt": "Implement markdownTable in src/md-table.ts (exact output format specified in the file comments) so the tests in src/md-table.test.ts pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "implement"
+    },
+    {
+      "id": "implement-expression-eval",
+      "dir": "tasks/implement-expression-eval",
+      "prompt": "Implement evaluate in src/calc.ts \u2014 an arithmetic expression evaluator with precedence and parentheses (spec in the file comments; eval/Function are forbidden) \u2014 so the tests in src/calc.test.ts pass. Do not edit the test file.",
+      "difficulty": "hard",
+      "category": "implement"
+    },
+    {
+      "id": "multi-implement-validators",
+      "dir": "tasks/multi-implement-validators",
+      "prompt": "The tests in src/form.test.ts are failing. src/form.ts is correct \u2014 the validators it imports from src/validators.ts are not implemented. Implement them (spec in the file comments) so all tests pass. Do not edit form.ts or the test file.",
+      "difficulty": "medium",
+      "category": "multi-file"
+    },
+    {
+      "id": "multi-fix-units",
+      "dir": "tasks/multi-fix-units",
+      "prompt": "The tests in src/weather.test.ts are failing. The bug may not be in weather.ts itself. Find and fix it so all tests pass. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "multi-file"
+    },
+    {
+      "id": "multi-rename-export",
+      "dir": "tasks/multi-rename-export",
+      "prompt": "bun test fails: src/stats.ts imports `average` from src/math-utils.ts, but no such export exists. Fix src/math-utils.ts so the tests in src/stats.test.ts pass. Do not edit stats.ts or the test file.",
+      "difficulty": "medium",
+      "category": "multi-file"
+    },
+    {
+      "id": "refactor-callback-to-promise",
+      "dir": "tasks/refactor-callback-to-promise",
+      "prompt": "Refactor loadUsers in src/loader.ts from its legacy callback signature to the Promise API described in the file comments. The tests in src/loader.test.ts already use the Promise form. Do not edit the test file.",
+      "difficulty": "medium",
+      "category": "refactor"
+    },
+    {
+      "id": "longctx-cross-module-bug",
+      "dir": "tasks/longctx-cross-module-bug",
+      "prompt": "The tests in src/api.test.ts fail. The bug is somewhere in this ~30-file order-checkout codebase, several modules away from the test. Find it and fix it so all tests pass. Do not edit the test file.",
+      "difficulty": "hard",
+      "category": "long-context"
+    },
+    {
+      "id": "longctx-shared-tax-rate",
+      "dir": "tasks/longctx-shared-tax-rate",
+      "prompt": "Prices across the feature modules are computed with a stale hardcoded tax rate. The authoritative rate lives in src/config/tax.ts. Make every feature module use the shared TAX_RATE so the tests in src/tax.test.ts pass. Do not edit the test file or src/config/tax.ts.",
+      "difficulty": "medium",
+      "category": "long-context"
+    },
+    {
+      "id": "longctx-stale-cache-key",
+      "dir": "tasks/longctx-stale-cache-key",
+      "prompt": "Users are seeing other people's profile data. The bug is somewhere in this ~20-file service codebase \u2014 trace how profiles are cached and fix it so the tests in src/cache.test.ts pass. Do not edit the test file.",
+      "difficulty": "hard",
+      "category": "long-context"
+    },
+    {
+      "id": "longctx-metric-args",
+      "dir": "tasks/longctx-metric-args",
+      "prompt": "Some feature modules call the shared metrics API with arguments in the wrong order. Find every offender and fix the calls so the tests in src/metrics.test.ts pass. Do not edit the test file or src/metrics/registry.ts.",
+      "difficulty": "medium",
+      "category": "long-context"
+    },
+    {
+      "id": "longctx-config-precedence",
+      "dir": "tasks/longctx-config-precedence",
+      "prompt": "Environment overrides are supposed to beat file config, which beats defaults \u2014 but overrides are being ignored somewhere in this codebase. Trace the config pipeline and fix it so the tests in src/config.test.ts pass. Do not edit the test file.",
+      "difficulty": "hard",
+      "category": "long-context"
+    }
+  ]
+}

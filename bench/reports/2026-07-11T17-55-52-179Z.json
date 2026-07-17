@@ -1,0 +1,38 @@
+{
+  "suite": "klaatcode-bench-v2",
+  "tier": "code",
+  "runs": 1,
+  "when": "2026-07-11T17-55-52-179Z",
+  "complete": true,
+  "solved": 1,
+  "total": 1,
+  "planned": 1,
+  "totalCostUsd": 0.015016499999999997,
+  "totalTokens": 29219,
+  "tasks": [
+    {
+      "id": "fix-reverse-words",
+      "difficulty": "easy",
+      "category": "bugfix",
+      "passed": true,
+      "promptTokens": 28812,
+      "completionTokens": 407,
+      "totalTokens": 29219,
+      "estTokens": 0,
+      "requests": 5,
+      "usageEvents": 5,
+      "partialUsage": false,
+      "turns": 4,
+      "toolCalls": 4,
+      "costUsd": 0.015016499999999997,
+      "tiers": {
+        "code": 5
+      },
+      "lastModel": "qwen/qwen3-coder-480b-a35b-instruct",
+      "elapsedMs": 15322,
+      "stoppedBy": "done",
+      "runs": 1,
+      "passes": 1
+    }
+  ]
+}

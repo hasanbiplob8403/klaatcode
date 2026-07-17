@@ -1,0 +1,31 @@
+{
+  "suite": "klaatcode-bench-v1",
+  "tier": "auto",
+  "runs": 1,
+  "when": "2026-07-11T11-34-04-150Z",
+  "solved": 0,
+  "total": 1,
+  "totalCostUsd": 0,
+  "totalTokens": 0,
+  "tasks": [
+    {
+      "id": "fix-fizzbuzz",
+      "difficulty": "easy",
+      "passed": false,
+      "promptTokens": 0,
+      "completionTokens": 0,
+      "totalTokens": 0,
+      "requests": 0,
+      "turns": 0,
+      "toolCalls": 0,
+      "costUsd": 0,
+      "tiers": {},
+      "lastModel": "Auto",
+      "elapsedMs": 75,
+      "stoppedBy": "error",
+      "error": "self signed certificate in certificate chain",
+      "runs": 1,
+      "passes": 0
+    }
+  ]
+}

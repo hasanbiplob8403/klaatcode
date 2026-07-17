@@ -1,0 +1,29 @@
+{
+  "suite": "klaatcode-bench-v2",
+  "agent": "claude-code",
+  "model": "default",
+  "when": "2026-07-11T18-29-59-357Z",
+  "complete": true,
+  "solved": 1,
+  "total": 1,
+  "planned": 1,
+  "totalCostUsd": 0.337509,
+  "totalTokens": 101661,
+  "tasks": [
+    {
+      "id": "fix-fizzbuzz",
+      "difficulty": "easy",
+      "category": "bugfix",
+      "passed": true,
+      "promptTokens": 6221,
+      "completionTokens": 745,
+      "totalTokens": 101661,
+      "cacheReadTokens": 84319,
+      "cacheCreateTokens": 10376,
+      "turns": 5,
+      "costUsd": 0.337509,
+      "model": "claude-fable-5",
+      "elapsedMs": 33508
+    }
+  ]
+}
