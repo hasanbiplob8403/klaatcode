@@ -1,8 +1,12 @@
-<p align="center">
-  <picture>
-    <img src="https://klaatai.com/logos/Klaat_white.png" width="180" alt="KlaatAI Logo" style="background:#1e1e1e;border-radius:12px;padding:12px 18px;" />
-  </picture>
-</p>
+<div align="center">
+<table><tr><td bgcolor="#1e1e1e">
+<br/>
+<a href="https://klaatai.com">
+<img src="https://klaatai.com/logos/Klaat_white.png" width="180" alt="KlaatAI Logo" />
+</a>
+<br/><br/>
+</td></tr></table>
+</div>
 
 <h1 align="center">Klaat Code</h1>
 
