@@ -31,7 +31,7 @@ klaatcode
 </p>
 
 <p align="center">
-  <img src="assets/klaatcode.jpg" alt="KlaatCode CLI demo" width="720" />
+  <a href="https://klaatai.com" target="_blank"><img src="assets/klaatcode.jpg" alt="KlaatCode CLI demo"  width="1920" /></a>
 </p>
 
 ---
