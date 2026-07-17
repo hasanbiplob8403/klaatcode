@@ -31,7 +31,7 @@ klaatcode
 </p>
 
 <p align="center">
-  <img src="assets/klaatcode.gif" alt="KlaatCode CLI demo" width="720" />
+  <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHh2aHNuMDRwbmdqNnN4ajJrMW9hZnJnbWhzNGw1ZDNiNHQ4NzB2ayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gY9xQrCtaMHCmX04FA/giphy.gif" alt="KlaatCode CLI demo" width="720" />
 </p>
 
 ---
