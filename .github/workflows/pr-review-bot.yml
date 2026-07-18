@@ -7,6 +7,11 @@ name: KlaatAI Review Bot
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "PR number to review manually (for testing, or re-running after a workflow change)"
+        required: true
 
 permissions:
   contents: read
@@ -15,7 +20,6 @@ permissions:
 jobs:
   review:
     runs-on: ubuntu-latest
-    if: ${{ github.event.pull_request.draft == false }}
     steps:
       - name: Check for API key
         id: guard
@@ -27,17 +31,33 @@ jobs:
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Gather PR + issue context
+      - name: Resolve PR number + draft status
         if: steps.guard.outputs.skip == 'false'
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          DISPATCH_PR_NUMBER: ${{ github.event.inputs.pr_number }}
+          EVENT_PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          PR_NUMBER="${DISPATCH_PR_NUMBER:-$EVENT_PR_NUMBER}"
+          IS_DRAFT=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json isDraft --jq '.isDraft')
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
+          echo "is_draft=$IS_DRAFT" >> "$GITHUB_OUTPUT"
+
+      - name: Gather PR + issue context
+        if: steps.guard.outputs.skip == 'false' && steps.pr.outputs.is_draft == 'false'
         id: ctx
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
         run: |
           set -euo pipefail
+
+          PR_TITLE=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json title --jq '.title')
+          PR_BODY=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json body --jq '.body')
 
           # Find a linked issue: "#123", "fixes #123", "closes #123", "fix #123" — case-insensitive.
           ISSUE_NUM=$(printf '%s\n%s' "$PR_TITLE" "$PR_BODY" \
@@ -64,6 +84,12 @@ jobs:
           fi
 
           {
+            echo "pr_title<<'EOF_TITLE'"
+            echo "$PR_TITLE"
+            echo "EOF_TITLE"
+            echo "pr_body<<'EOF_BODY'"
+            echo "$PR_BODY"
+            echo "EOF_BODY"
             echo "issue_json<<'EOF_ISSUE'"
             echo "$ISSUE_JSON"
             echo "EOF_ISSUE"
@@ -78,12 +104,12 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Ask Klaatu for a review
-        if: steps.guard.outputs.skip == 'false'
+        if: steps.guard.outputs.skip == 'false' && steps.pr.outputs.is_draft == 'false'
         id: review
         env:
           KLAATU_API_KEY: ${{ secrets.KLAATU_API_KEY }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_TITLE: ${{ steps.ctx.outputs.pr_title }}
+          PR_BODY: ${{ steps.ctx.outputs.pr_body }}
           ISSUE_NUM: ${{ steps.ctx.outputs.issue_num }}
           ISSUE_JSON: ${{ steps.ctx.outputs.issue_json }}
           DIFF: ${{ steps.ctx.outputs.diff }}
@@ -94,32 +120,14 @@ jobs:
           set -euo pipefail
 
           SYSTEM_PROMPT='You are an advisory code reviewer for the klaatcode open-source CLI repo. You never approve, reject, or block a PR — a human maintainer always makes that call. Given a linked GitHub issue (if any), the PR diff, and the changed-file list, produce a SHORT, specific review covering exactly these four things, in this order, as markdown:
+          1. Issue match — does the diff actually address what the linked issue asked for? Partial credit if it does part of it. If there is no linked issue, say so plainly and note that reviewers should confirm intent manually.
+          2. Test coverage — were tests added or updated for this change? Name the specific behavior that is or is not covered. Do not just say yes/no on tests present — say what a test would need to check that is missing, if anything.
+          3. Correctness concerns — specific edge cases, error paths, or interactions with existing code that look unhandled or risky, referencing exact lines/functions where you can. If nothing stands out, say so briefly rather than inventing a concern.
+          4. Verdict — one line: ready to merge as-is / needs a specific fix first / needs human judgment call on X. Never phrase this as your own approval — phrase it as what you would flag to a human reviewer.
+          Keep the whole review under 300 words. Be concrete — cite file names and behavior, not generic advice. Format the four sections as markdown with bold headers.'
 
-1. **Issue match** — does the diff actually address what the linked issue asked for? Partial credit if it does part of it. If there is no linked issue, say so plainly and note that reviewers should confirm intent manually.
-2. **Test coverage** — were tests added or updated for this change? Name the specific behavior that is or is not covered. Do not just say "yes/no tests present" — say what a test would need to check that is missing, if anything.
-3. **Correctness concerns** — specific edge cases, error paths, or interactions with existing code that look unhandled or risky, referencing exact lines/functions where you can. If nothing stands out, say so briefly rather than inventing a concern.
-4. **Verdict** — one line: ready to merge as-is / needs a specific fix first / needs human judgment call on X. Never phrase this as your own approval — phrase it as what you would flag to a human reviewer.
-
-Keep the whole review under 300 words. Be concrete — cite file names and behavior, not generic advice.'
-
-          USER_PROMPT=$(cat <<EOF
-PR title: ${PR_TITLE}
-
-PR body:
-${PR_BODY}
-
-Linked issue #${ISSUE_NUM}:
-${ISSUE_JSON}
-
-Changed files:
-${FILES}
-
-Has a test-looking file changed: ${HAS_TEST_FILE}
-
-Diff (truncated to first 60000 chars: ${DIFF_TRUNCATED}):
-${DIFF}
-EOF
-)
+          USER_PROMPT=$(printf 'PR title: %s\nPR body:\n%s\nLinked issue #%s:\n%s\nChanged files:\n%s\nHas a test-looking file changed: %s\nDiff (truncated to first 60000 chars: %s):\n%s\n' \
+            "$PR_TITLE" "$PR_BODY" "$ISSUE_NUM" "$ISSUE_JSON" "$FILES" "$HAS_TEST_FILE" "$DIFF_TRUNCATED" "$DIFF")
 
           PAYLOAD=$(jq -n --arg sys "$SYSTEM_PROMPT" --arg usr "$USER_PROMPT" '{
             model: "klaatu-reason",
@@ -150,17 +158,13 @@ EOF
           fi
 
       - name: Post review comment
-        if: steps.guard.outputs.skip == 'false' && steps.review.outputs.review_text != ''
+        if: steps.guard.outputs.skip == 'false' && steps.pr.outputs.is_draft == 'false' && steps.review.outputs.review_text != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ steps.pr.outputs.pr_number }}
           REVIEW_TEXT: ${{ steps.review.outputs.review_text }}
         run: |
           set -euo pipefail
-          BODY="🤖 **KlaatAI Review Bot** (powered by Klaatu, advisory only — a maintainer makes the real call)
-
-${REVIEW_TEXT}
-
-<sub>This is an automated review to help triage faster, not a gate. Nothing here blocks merging.</sub>"
+          BODY=$(printf '🤖 **KlaatAI Review Bot** (powered by Klaatu, advisory only — a maintainer makes the real call)\n\n%s\n\n<sub>This is an automated review to help triage faster, not a gate. Nothing here blocks merging.</sub>' "$REVIEW_TEXT")
           gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$BODY"
