@@ -28,10 +28,11 @@ klaatcode
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache 2.0" /></a>
   <a href="https://github.com/KlaatAI/klaatcode/actions"><img src="https://github.com/KlaatAI/klaatcode/actions/workflows/klaatcode-ci.yml/badge.svg" alt="CI" /></a>
   <a href="https://www.npmjs.com/package/klaatcode"><img src="https://img.shields.io/npm/v/klaatcode.svg?color=purple" alt="npm version" /></a>
+  <a href="https://discord.gg/93Ryfc96e"><img src="https://img.shields.io/discord/1364935629039362149?color=7289da&label=Discord&logo=discord&logoColor=white" alt="Discord" /></a>
 </p>
 
 <p align="center">
-  <a href="https://klaatai.com" target="_blank"><img src="assets/klaatcode.jpg" alt="KlaatCode CLI demo"  width="1920" /></a>
+  <img src="assets/klaatcode.jpg" alt="KlaatCode CLI demo" width="720" />
 </p>
 
 ---
