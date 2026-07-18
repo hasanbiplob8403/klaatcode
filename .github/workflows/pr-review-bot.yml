@@ -1,0 +1,166 @@
+name: KlaatAI Review Bot
+
+# Advisory-only PR review, powered by the KlaatAI/Klaatu API. Posts a single
+# comment with findings (issue-match, test coverage, concerns) — never blocks
+# merge, never approves/requests-changes. A human always decides.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.draft == false }}
+    steps:
+      - name: Check for API key
+        id: guard
+        run: |
+          if [ -z "${{ secrets.KLAATU_API_KEY }}" ]; then
+            echo "KLAATU_API_KEY not set — skipping review bot (not a failure)."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Gather PR + issue context
+        if: steps.guard.outputs.skip == 'false'
+        id: ctx
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+
+          # Find a linked issue: "#123", "fixes #123", "closes #123", "fix #123" — case-insensitive.
+          ISSUE_NUM=$(printf '%s\n%s' "$PR_TITLE" "$PR_BODY" \
+            | grep -ioE '(fix(e[sd])?|close[sd]?|resolve[sd]?)?[[:space:]]*#[0-9]+' \
+            | grep -oE '[0-9]+' | head -1 || true)
+
+          ISSUE_JSON='null'
+          if [ -n "${ISSUE_NUM:-}" ]; then
+            ISSUE_JSON=$(gh issue view "$ISSUE_NUM" --repo "$REPO" --json title,body 2>/dev/null || echo 'null')
+          fi
+          echo "issue_num=${ISSUE_NUM:-none}" >> "$GITHUB_OUTPUT"
+
+          # PR diff, capped to keep the request payload sane.
+          DIFF=$(gh pr diff "$PR_NUMBER" --repo "$REPO" 2>/dev/null | head -c 60000)
+          DIFF_TRUNCATED="false"
+          FULL_LEN=$(gh pr diff "$PR_NUMBER" --repo "$REPO" 2>/dev/null | wc -c)
+          if [ "$FULL_LEN" -gt 60000 ]; then DIFF_TRUNCATED="true"; fi
+
+          # Changed files + whether any touch a *.test.* / *_test.* / test/ path.
+          FILES=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json files --jq '.files[].path')
+          HAS_TEST_FILE="false"
+          if printf '%s\n' "$FILES" | grep -qiE '(\.test\.|_test\.|/tests?/)'; then
+            HAS_TEST_FILE="true"
+          fi
+
+          {
+            echo "issue_json<<'EOF_ISSUE'"
+            echo "$ISSUE_JSON"
+            echo "EOF_ISSUE"
+            echo "diff<<'EOF_DIFF'"
+            echo "$DIFF"
+            echo "EOF_DIFF"
+            echo "diff_truncated=$DIFF_TRUNCATED"
+            echo "files<<'EOF_FILES'"
+            echo "$FILES"
+            echo "EOF_FILES"
+            echo "has_test_file=$HAS_TEST_FILE"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Ask Klaatu for a review
+        if: steps.guard.outputs.skip == 'false'
+        id: review
+        env:
+          KLAATU_API_KEY: ${{ secrets.KLAATU_API_KEY }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          ISSUE_NUM: ${{ steps.ctx.outputs.issue_num }}
+          ISSUE_JSON: ${{ steps.ctx.outputs.issue_json }}
+          DIFF: ${{ steps.ctx.outputs.diff }}
+          DIFF_TRUNCATED: ${{ steps.ctx.outputs.diff_truncated }}
+          FILES: ${{ steps.ctx.outputs.files }}
+          HAS_TEST_FILE: ${{ steps.ctx.outputs.has_test_file }}
+        run: |
+          set -euo pipefail
+
+          SYSTEM_PROMPT='You are an advisory code reviewer for the klaatcode open-source CLI repo. You never approve, reject, or block a PR — a human maintainer always makes that call. Given a linked GitHub issue (if any), the PR diff, and the changed-file list, produce a SHORT, specific review covering exactly these four things, in this order, as markdown:
+
+1. **Issue match** — does the diff actually address what the linked issue asked for? Partial credit if it does part of it. If there is no linked issue, say so plainly and note that reviewers should confirm intent manually.
+2. **Test coverage** — were tests added or updated for this change? Name the specific behavior that is or is not covered. Do not just say "yes/no tests present" — say what a test would need to check that is missing, if anything.
+3. **Correctness concerns** — specific edge cases, error paths, or interactions with existing code that look unhandled or risky, referencing exact lines/functions where you can. If nothing stands out, say so briefly rather than inventing a concern.
+4. **Verdict** — one line: ready to merge as-is / needs a specific fix first / needs human judgment call on X. Never phrase this as your own approval — phrase it as what you would flag to a human reviewer.
+
+Keep the whole review under 300 words. Be concrete — cite file names and behavior, not generic advice.'
+
+          USER_PROMPT=$(cat <<EOF
+PR title: ${PR_TITLE}
+
+PR body:
+${PR_BODY}
+
+Linked issue #${ISSUE_NUM}:
+${ISSUE_JSON}
+
+Changed files:
+${FILES}
+
+Has a test-looking file changed: ${HAS_TEST_FILE}
+
+Diff (truncated to first 60000 chars: ${DIFF_TRUNCATED}):
+${DIFF}
+EOF
+)
+
+          PAYLOAD=$(jq -n --arg sys "$SYSTEM_PROMPT" --arg usr "$USER_PROMPT" '{
+            model: "klaatu-reason",
+            messages: [
+              {role: "system", content: $sys},
+              {role: "user", content: $usr}
+            ],
+            stream: false
+          }')
+
+          RESPONSE=$(curl -sS -X POST "https://api.klaatai.com/v1/chat/completions" \
+            -H "Authorization: Bearer ${KLAATU_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          REVIEW_TEXT=$(echo "$RESPONSE" | jq -r '.choices[0].message.content // empty')
+
+          if [ -z "$REVIEW_TEXT" ]; then
+            echo "Klaatu API did not return review content — response was:"
+            echo "$RESPONSE"
+            echo "review_text=" >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "review_text<<'EOF_REVIEW'"
+              echo "$REVIEW_TEXT"
+              echo "EOF_REVIEW"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Post review comment
+        if: steps.guard.outputs.skip == 'false' && steps.review.outputs.review_text != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REVIEW_TEXT: ${{ steps.review.outputs.review_text }}
+        run: |
+          set -euo pipefail
+          BODY="🤖 **KlaatAI Review Bot** (powered by Klaatu, advisory only — a maintainer makes the real call)
+
+${REVIEW_TEXT}
+
+<sub>This is an automated review to help triage faster, not a gate. Nothing here blocks merging.</sub>"
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body "$BODY"
