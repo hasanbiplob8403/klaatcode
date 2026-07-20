@@ -1,4 +1,4 @@
-<p align="center">
+<p align="cent
   <a href="https://klaatai.com">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="https://klaatai.com/logos/Klaat_white.png" />
